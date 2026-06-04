@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>马·影 — 马场纪实影集</title>
+  <meta name="description" content="以影像记录马场生活，三个维度，三十帧瞬间">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===================================================
+       LANDING PAGE
+       =================================================== -->
+  <div id="landing">
+    <div class="landing-beam landing-beam-1"></div>
+    <div class="landing-beam landing-beam-2"></div>
+    <div class="landing-vignette"></div>
+    <div class="landing-content">
+      <div class="landing-deco"></div>
+      <h1 class="landing-title">马·影</h1>
+      <p class="landing-subtitle">Equestrian Photography</p>
+      <div class="landing-deco"></div>
+      <p class="landing-hint">点击进入影集</p>
+    </div>
+  </div>
+
+  <!-- ===================================================
+       SECTION 1 — FLIP BOOK
+       =================================================== -->
+  <section id="flipbook-section">
+
+    <div class="book-stage">
+      <button class="nav-btn nav-prev" id="prevBtn" aria-label="上一页">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="book-wrap" id="bookWrap">
+        <div id="book"></div>
+      </div>
+
+      <button class="nav-btn nav-next" id="nextBtn" aria-label="下一页">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <div class="book-footer">
+      <span class="page-num" id="pageNum">1 · 35</span>
+      <span class="footer-sep"></span>
+      <button class="enter-btn" id="enterBtn" onclick="scrollToGallery()">进入展馆</button>
+    </div>
+
+  </section>
+
+  <!-- ===================================================
+       SECTION 2 — GALLERY WALL
+       =================================================== -->
+  <section id="gallery-section">
+
+    <header class="gallery-header">
+      <div class="gallery-header-rule"></div>
+      <h2 class="gallery-title">展馆</h2>
+      <p class="gallery-desc">三个维度，三十帧影像，记录马场生活的不同面向</p>
+    </header>
+
+    <div class="gallery-wall" id="galleryWall">
+      <!-- Clusters injected by JS -->
+    </div>
+
+    <div class="gallery-footer">
+      <button class="back-btn" onclick="scrollToFlipbook()">返回影集</button>
+    </div>
+
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
