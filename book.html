@@ -319,7 +319,7 @@
       <div class="toolbar-title">马·影 PDF 书册版</div>
     </div>
     <div class="toolbar-actions">
-      <button class="toolbar-btn" onclick="window.print()">打印 / 另存为 PDF</button>
+      <button class="toolbar-btn" id="printBtn" onclick="handlePrint()">打印 / 另存为 PDF</button>
       <button class="toolbar-btn" onclick="window.location.href='index.html#flipbook-section'">返回线上影集</button>
     </div>
   </header>
@@ -393,7 +393,7 @@
 
           frag.appendChild(createSheet('photo-page', `
             <figure class="photo-frame">
-              <img src="${src}" alt="${title}" loading="lazy">
+              <img src="${src}" alt="${title}" loading="eager" decoding="sync">
             </figure>
             <figcaption class="photo-caption">
               <span>
@@ -417,7 +417,47 @@
       shell.appendChild(frag);
     }
 
+    /**
+     * Wait until every generated image is fully loaded and decoded for print.
+     */
+    function waitForImage(img) {
+      const loaded = img.complete && img.naturalWidth > 0;
+      const loadPromise = loaded
+        ? Promise.resolve()
+        : new Promise((resolve) => {
+          img.addEventListener('load', resolve, { once: true });
+          img.addEventListener('error', resolve, { once: true });
+        });
+
+      return loadPromise.then(() => {
+        if (typeof img.decode !== 'function') return undefined;
+        return img.decode().catch(() => undefined);
+      });
+    }
+
+    /**
+     * Ensure all image bitmaps are ready before the browser renders print pages.
+     */
+    async function handlePrint() {
+      const btn = document.getElementById('printBtn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '正在准备图片...';
+
+      const images = Array.from(document.querySelectorAll('.photo-frame img'));
+      await Promise.all(images.map(waitForImage));
+
+      btn.textContent = originalText;
+      btn.disabled = false;
+      window.print();
+    }
+
     renderBook();
+    window.addEventListener('beforeprint', () => {
+      document.querySelectorAll('.photo-frame img').forEach((img) => {
+        img.loading = 'eager';
+      });
+    });
   </script>
 </body>
 </html>
