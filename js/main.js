@@ -165,19 +165,42 @@ function buildFlipBook() {
    ============================================================ */
 let pageFlipInstance = null;
 
-function initPageFlip() {
+/**
+ * Compute the largest page size that fits the current viewport.
+ */
+function getFlipBookSize() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const isPortrait = vw < 700;
 
-  let pageW, pageH;
   if (isPortrait) {
-    pageW = Math.floor(Math.min(vw * 0.84, 360));
-    pageH = Math.floor(pageW * 1.44);
-  } else {
-    pageH = Math.floor(Math.min(vh * 0.76, 680));
-    pageW = Math.floor(pageH * 0.68);
+    const maxPageWByWidth = vw * 0.9;
+    const maxPageWByHeight = (vh - 108) / 1.44;
+    const pageW = Math.floor(Math.max(280, Math.min(maxPageWByWidth, maxPageWByHeight, 430)));
+
+    return {
+      width: pageW,
+      height: Math.floor(pageW * 1.44),
+      isPortrait,
+    };
   }
+
+  const horizontalReserve = 168;
+  const verticalReserve = 72;
+  const maxPageWBySpread = (vw - horizontalReserve) / 2;
+  const maxPageHByViewport = vh - verticalReserve;
+  const pageW = Math.floor(Math.max(320, Math.min(maxPageWBySpread, maxPageHByViewport * 0.68, 620)));
+
+  return {
+    width: pageW,
+    height: Math.floor(pageW / 0.68),
+    isPortrait,
+  };
+}
+
+function initPageFlip() {
+  const { width: pageW, height: pageH, isPortrait } = getFlipBookSize();
+  let resizeTimer = null;
 
   pageFlipInstance = new St.PageFlip(document.getElementById('book'), {
     width:               pageW,
@@ -188,7 +211,7 @@ function initPageFlip() {
     showCover:           false,
     usePortrait:         isPortrait,
     startZIndex:         0,
-    autoSize:            true,
+    autoSize:            false,
     maxShadowOpacity:    0.5,
     mobileScrollSupport: false,
     swipeDistance:       30,
@@ -227,6 +250,18 @@ function initPageFlip() {
   });
   document.getElementById('nextBtn').addEventListener('click', () => {
     pageFlipInstance.flipNext();
+  });
+
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const nextSize = getFlipBookSize();
+      pageFlipInstance.update({
+        width:       nextSize.width,
+        height:      nextSize.height,
+        usePortrait: nextSize.isPortrait,
+      });
+    }, 160);
   });
 }
 
