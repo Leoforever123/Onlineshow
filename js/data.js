@@ -7,7 +7,7 @@ const SECTIONS = [
     id:          'commercial',
     title:       '商业价值',
     subtitle:    '产业图景',
-    description: '马场不只是马的居所，更是一套完整的商业生态',
+    description: '马场不只是马的居所\n更是一套完整的商业生态',
     dir:         'images/commercial',
     photos: [
       { file: '1-1.jpg',  caption: '鞍具房陈列：专业马具配套，支撑全业态商业运营基础' },
@@ -45,7 +45,7 @@ const SECTIONS = [
     id:          'horses',
     title:       '马场众生',
     subtitle:    '自然天性',
-    description: '去掉一切人的视角，只是马，只是生命本身',
+    description: '只是马，只是生命本身',
     dir:         'images/horses',
     photos: [
       { file: '3-1.jpg',  caption: '空净马房：规整的圈养空间，承载马匹日常栖居时光' },

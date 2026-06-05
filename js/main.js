@@ -302,82 +302,41 @@ function waitForImage(img) {
 }
 
 /**
- * Compute row breaks and item rectangles using the same core idea as
- * Flickr-style justified galleries: collect images until a row can fill
- * the available width near the target height, then scale that whole row.
+ * Compute three balanced justified rows so the final row never becomes sparse.
  */
 function layoutCollage(viewport, wall, items) {
   const isMobile = window.innerWidth <= 860;
   const viewportW = viewport.clientWidth || window.innerWidth;
   const viewportH = viewport.clientHeight || window.innerHeight;
   const canvasW = isMobile
-    ? Math.max(980, viewportW * 2.3)
-    : Math.max(1600, viewportW * 1.65);
+    ? Math.max(1680, viewportW * 3.2)
+    : Math.max(2600, viewportW * 2.65);
   const gap = isMobile ? 16 : 24;
   const padX = isMobile ? 28 : 78;
   const padTop = isMobile ? 118 : 138;
   const padBottom = isMobile ? 56 : 96;
   const rowJitter = isMobile ? 0 : 20;
-  const targetH = isMobile
-    ? Math.max(126, Math.min(168, viewportH * 0.19))
-    : Math.max(205, Math.min(285, viewportH * 0.29));
-  const maxRowH = targetH * (isMobile ? 1.12 : 1.18);
   const availableW = canvasW - padX * 2;
-  const rows = [];
-  let row = [];
-  let ratioSum = 0;
-
-  items.forEach((item) => {
+  const rowCount = 3;
+  const photoData = items.map((item) => {
     const img = item.querySelector('img');
     const ratio = img.naturalWidth && img.naturalHeight
       ? img.naturalWidth / img.naturalHeight
       : 4 / 3;
 
-    row.push({ item, ratio });
-    ratioSum += ratio;
-
-    const rowH = (availableW - gap * (row.length - 1)) / ratioSum;
-    if (row.length >= 3 && rowH <= targetH) {
-      rows.push({ items: row, height: Math.min(rowH, maxRowH), justified: true });
-      row = [];
-      ratioSum = 0;
-    }
+    return { item, ratio };
   });
-
-  if (row.length && row.length < 3 && rows.length) {
-    const previous = rows.pop();
-    row = previous.items.concat(row);
-    ratioSum = row.reduce((sum, { ratio }) => sum + ratio, 0);
-  }
-
-  if (row.length) {
-    const looseH = Math.min(targetH * 0.96, maxRowH);
-    const rowH = (availableW - gap * (row.length - 1)) / ratioSum;
-    rows.push({
-      items: row,
-      height: row.length >= 4 ? Math.min(rowH, maxRowH) : looseH,
-      justified: row.length >= 4,
-    });
-  }
+  const rows = partitionBalancedRows(photoData, rowCount);
 
   let y = padTop;
   rows.forEach((layoutRow, rowIndex) => {
-    const rowItems = layoutRow.items;
-    let h = layoutRow.height;
-    let widths = rowItems.map(({ ratio }) => ratio * h);
-    const rowW = widths.reduce((sum, width) => sum + width, 0) + gap * (rowItems.length - 1);
-
-    if (layoutRow.justified) {
-      const scale = availableW / rowW;
-      h *= scale;
-      widths = widths.map((width) => width * scale);
-    }
-
-    const rowWidth = widths.reduce((sum, width) => sum + width, 0) + gap * (rowItems.length - 1);
-    let x = padX + (layoutRow.justified ? 0 : (availableW - rowWidth) / 2);
+    const ratioSum = layoutRow.reduce((sum, { ratio }) => sum + ratio, 0);
+    const h = (availableW - gap * (layoutRow.length - 1)) / ratioSum;
+    const widths = layoutRow.map(({ ratio }) => ratio * h);
+    let x = padX;
     const yOffset = rowIndex % 2 === 0 ? 0 : rowJitter;
 
-    rowItems.forEach(({ item }, itemIndex) => {
+    layoutRow.forEach(({ item }, itemIndex) => {
       const globalIndex = items.indexOf(item);
       const rotation = COLLAGE_ROTATIONS[globalIndex % COLLAGE_ROTATIONS.length];
       const width = widths[itemIndex];
@@ -398,6 +357,51 @@ function layoutCollage(viewport, wall, items) {
   wall.style.width = `${canvasW}px`;
   wall.style.height = `${Math.max(y + padBottom, viewportH * (isMobile ? 1.5 : 1.85))}px`;
   wall.dispatchEvent(new CustomEvent('collage:layout'));
+}
+
+/**
+ * Split ordered photos into a fixed number of rows with similar total ratios.
+ */
+function partitionBalancedRows(photos, rowCount) {
+  const totalRatio = photos.reduce((sum, { ratio }) => sum + ratio, 0);
+  const targetRatio = totalRatio / rowCount;
+  const rows = [];
+  let start = 0;
+
+  for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+    const rowsLeft = rowCount - rowIndex;
+    const remaining = photos.length - start;
+
+    if (rowsLeft === 1) {
+      rows.push(photos.slice(start));
+      break;
+    }
+
+    const minEnd = start + Math.max(1, Math.floor(remaining / rowsLeft) - 1);
+    const maxEnd = photos.length - (rowsLeft - 1);
+    let bestEnd = minEnd;
+    let bestScore = Infinity;
+    let ratioSum = 0;
+
+    for (let end = start + 1; end <= maxEnd; end += 1) {
+      ratioSum += photos[end - 1].ratio;
+      if (end < minEnd) continue;
+
+      const count = end - start;
+      const countPenalty = Math.abs(count - photos.length / rowCount) * 0.18;
+      const score = Math.abs(ratioSum - targetRatio) + countPenalty;
+
+      if (score < bestScore) {
+        bestScore = score;
+        bestEnd = end;
+      }
+    }
+
+    rows.push(photos.slice(start, bestEnd));
+    start = bestEnd;
+  }
+
+  return rows;
 }
 
 /* ============================================================
