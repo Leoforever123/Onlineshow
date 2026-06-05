@@ -285,8 +285,8 @@ button { cursor: pointer; }
 .page {
   background: var(--surface);
   overflow: hidden;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
 }
 
 /* StPageFlip binding shadows */
@@ -412,6 +412,7 @@ button { cursor: pointer; }
   line-height: 1;
   right: 8%;
   bottom: 8%;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -536,212 +537,178 @@ button { cursor: pointer; }
 }
 
 /* ============================================================
-   SECTION 2 — GALLERY WALL
+   GALLERY WALL
    ============================================================ */
+.gallery-page {
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+}
+
 #gallery-section {
-  background: var(--bg);
-  padding: 80px 40px 120px;
+  width: 100%;
+  height: 100svh;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(184, 151, 94, 0.08), transparent 28%),
+    radial-gradient(circle at 78% 84%, rgba(184, 151, 94, 0.055), transparent 30%),
+    #090807;
 }
 
-/* ── Header ── */
+#gallery-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.38) 100%);
+  pointer-events: none;
+  z-index: 4;
+}
+
 .gallery-header {
-  text-align: center;
-  margin-bottom: 72px;
+  position: absolute;
+  top: clamp(22px, 4vh, 42px);
+  left: clamp(22px, 4vw, 56px);
+  z-index: 8;
+  max-width: 360px;
+  pointer-events: none;
 }
 
-.gallery-header-rule {
-  width: 1px;
-  height: 52px;
-  background: linear-gradient(to bottom, transparent, var(--border));
-  margin: 0 auto 36px;
+.gallery-kicker {
+  font-family: var(--ff-sans);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 0.24em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
 .gallery-title {
   font-family: var(--ff-serif);
-  font-size: 30px;
+  font-size: clamp(28px, 4vw, 48px);
   font-weight: 600;
   color: var(--text-1);
-  letter-spacing: 0.2em;
-  margin-bottom: 14px;
+  letter-spacing: 0.18em;
+  line-height: 1.1;
+  margin-bottom: 10px;
+  text-shadow: 0 8px 36px rgba(0, 0, 0, 0.75);
 }
 
 .gallery-desc {
   font-family: var(--ff-sans);
-  font-size: 12px;
-  color: var(--text-2);
+  font-size: 11px;
+  color: rgba(237, 227, 216, 0.58);
   letter-spacing: 0.1em;
   line-height: 1.8;
 }
 
-/* ── Three-column wall ── */
-.gallery-wall {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 48px 40px;
-  max-width: 1340px;
-  margin: 0 auto;
-}
-
-/* ── Cluster (one section) ── */
-.cluster {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
-}
-
-.cluster.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.cluster:nth-child(2) { transition-delay: 0.14s; }
-.cluster:nth-child(3) { transition-delay: 0.28s; }
-
-.cluster-header {
-  padding-bottom: 20px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.cluster-num {
-  display: block;
-  font-family: var(--ff-sans);
-  font-size: 9px;
-  letter-spacing: 0.28em;
-  color: var(--gold);
-  margin-bottom: 10px;
-}
-
-.cluster-title {
-  font-family: var(--ff-serif);
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text-1);
-  letter-spacing: 0.1em;
-  margin-bottom: 4px;
-}
-
-.cluster-sub {
-  font-family: var(--ff-sans);
-  font-size: 11px;
-  color: var(--text-2);
-  letter-spacing: 0.12em;
-}
-
-/* ── Collage thumbnail grid ── */
-.cluster-grid {
-  display: grid;
-  /* 10 equal columns — photos span different amounts for organic sizing */
-  grid-template-columns: repeat(10, 1fr);
-  gap: 10px;
-  padding: 6px 4px;
-  /* allow rotated photos to bleed slightly outside */
-  overflow: visible;
-}
-
-/* Layout: alternating wide/narrow pairs (rows must sum to 10) */
-.cluster-grid .thumb-link:nth-child(1)  { grid-column: span 6; }
-.cluster-grid .thumb-link:nth-child(2)  { grid-column: span 4; }
-.cluster-grid .thumb-link:nth-child(3)  { grid-column: span 4; }
-.cluster-grid .thumb-link:nth-child(4)  { grid-column: span 6; }
-.cluster-grid .thumb-link:nth-child(5)  { grid-column: span 5; }
-.cluster-grid .thumb-link:nth-child(6)  { grid-column: span 5; }
-.cluster-grid .thumb-link:nth-child(7)  { grid-column: span 6; }
-.cluster-grid .thumb-link:nth-child(8)  { grid-column: span 4; }
-.cluster-grid .thumb-link:nth-child(9)  { grid-column: span 4; }
-.cluster-grid .thumb-link:nth-child(10) { grid-column: span 6; }
-
-/* Per-photo rotation angles — creates the collage scatter */
-.cluster-grid .thumb-link:nth-child(1)  { transform: rotate(-2.1deg); }
-.cluster-grid .thumb-link:nth-child(2)  { transform: rotate(1.9deg);  }
-.cluster-grid .thumb-link:nth-child(3)  { transform: rotate(-1.6deg); }
-.cluster-grid .thumb-link:nth-child(4)  { transform: rotate(2.4deg);  }
-.cluster-grid .thumb-link:nth-child(5)  { transform: rotate(-2.9deg); }
-.cluster-grid .thumb-link:nth-child(6)  { transform: rotate(1.5deg);  }
-.cluster-grid .thumb-link:nth-child(7)  { transform: rotate(-1.8deg); }
-.cluster-grid .thumb-link:nth-child(8)  { transform: rotate(2.8deg);  }
-.cluster-grid .thumb-link:nth-child(9)  { transform: rotate(-3.2deg); }
-.cluster-grid .thumb-link:nth-child(10) { transform: rotate(1.2deg);  }
-
-.thumb-link {
-  display: block;
-  position: relative;
+.gallery-viewport {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
+  cursor: grab;
+}
+
+.gallery-wall {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1600px;
+  height: 1200px;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.55s var(--ease-out);
+  will-change: transform;
+}
+
+.collage-item {
+  display: block;
+  position: absolute;
+  overflow: hidden;
   background: var(--surface);
   text-decoration: none;
-  /* Thin dark frame — gives each photo a "print" feel */
-  outline: 2px solid var(--surface-2);
-  box-shadow: 2px 3px 12px rgba(0, 0, 0, 0.45);
-  z-index: 1;
+  opacity: 0;
+  transform: translateY(24px) rotate(var(--r, 0deg));
+  outline: 3px solid rgba(30, 27, 23, 0.96);
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.52),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  z-index: var(--z, 1);
   transition:
-    transform   0.5s var(--ease-out),
-    box-shadow  0.5s ease,
-    z-index     0s   0.5s;
+    opacity    0.8s var(--ease-out),
+    transform  0.55s var(--ease-out),
+    box-shadow 0.45s ease,
+    z-index    0s 0.45s;
 }
 
-/* Hover: straighten, scale up, pop to front */
-.cluster-grid .thumb-link:hover {
-  transform:  rotate(0deg) scale(1.1) !important;
-  box-shadow: 4px 8px 32px rgba(0, 0, 0, 0.72);
-  z-index:    30;
-  transition:
-    transform   0.45s var(--ease-out),
-    box-shadow  0.45s ease,
-    z-index     0s;
+.collage-item.visible {
+  opacity: 1;
+  transform: rotate(var(--r, 0deg));
 }
 
-.thumb-link img {
+.collage-item:hover {
+  transform: rotate(0deg) scale(1.08);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.74);
+  z-index: 50;
+  transition:
+    transform  0.45s var(--ease-out),
+    box-shadow 0.45s ease,
+    z-index    0s;
+}
+
+.collage-item img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.thumb-overlay {
+.collage-label {
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0);
-  display: flex;
-  align-items: flex-end;
-  padding: 8px 10px;
-  transition: background 0.35s ease;
-}
-
-.thumb-link:hover .thumb-overlay {
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.thumb-label {
+  left: 10px;
+  bottom: 8px;
+  max-width: calc(100% - 20px);
   font-family: var(--ff-serif);
-  font-size: 9.5px;
+  font-size: 10px;
   color: rgba(237, 227, 216, 0);
-  letter-spacing: 0.1em;
-  line-height: 1.4;
-  transition: color 0.3s ease;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+  transition: color 0.28s ease;
 }
 
-.thumb-link:hover .thumb-label {
-  color: rgba(237, 227, 216, 0.9);
+.collage-item:hover .collage-label {
+  color: rgba(237, 227, 216, 0.92);
 }
 
-/* ── Gallery footer ── */
-.gallery-footer {
-  text-align: center;
-  margin-top: 72px;
-}
-
+.gallery-back-btn,
 .back-btn {
   border: none;
-  background: transparent;
+  background: rgba(13, 12, 11, 0.35);
   font-family: var(--ff-serif);
   font-size: 11px;
-  color: var(--text-3);
+  color: var(--text-2);
   letter-spacing: 0.18em;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
 }
 
-.back-btn:hover { color: var(--text-2); }
+.gallery-back-btn {
+  position: absolute;
+  top: clamp(24px, 4vh, 44px);
+  right: clamp(22px, 4vw, 56px);
+  z-index: 9;
+  padding: 10px 14px;
+}
+
+.back-btn:hover {
+  color: var(--text-1);
+  background: rgba(30, 27, 23, 0.72);
+}
+
+.gallery-hint {
+  display: none;
+}
 
 /* ============================================================
    GLIGHTBOX OVERRIDES
@@ -780,36 +747,42 @@ button { cursor: pointer; }
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 1100px) {
-  .gallery-wall { gap: 32px 28px; }
-}
-
 @media (max-width: 860px) {
-  #gallery-section { padding: 60px 24px 80px; }
-
-  .gallery-wall {
-    grid-template-columns: 1fr;
-    max-width: 520px;
-    margin: 0 auto;
-    gap: 56px;
+  .gallery-page {
+    height: auto;
+    overflow: auto;
   }
 
-  /* Keep 10-col collage on single-column mobile layout */
-  .cluster-grid {
-    grid-template-columns: repeat(10, 1fr);
-    gap: 7px;
+  #gallery-section {
+    height: 100svh;
   }
+
+  .gallery-header {
+    max-width: 260px;
+  }
+
+  .gallery-desc,
+  .gallery-hint {
+    display: none;
+  }
+
+  .gallery-viewport {
+    overflow: auto;
+  }
+
+  .gallery-wall { transition: none; }
 }
 
 @media (max-width: 520px) {
-  #gallery-section { padding: 48px 16px 72px; }
-  .gallery-title   { font-size: 24px; }
-  .cluster-title   { font-size: 18px; }
+  .gallery-title { font-size: 24px; }
 
-  .cluster-grid { gap: 5px; }
+  .gallery-back-btn {
+    top: 18px;
+    right: 16px;
+    padding: 8px 10px;
+  }
 
-  /* Reduce rotation on very small screens to avoid overflow issues */
-  .cluster-grid .thumb-link:nth-child(odd)  { transform: rotate(-1.2deg); }
-  .cluster-grid .thumb-link:nth-child(even) { transform: rotate(1.2deg); }
-  .cluster-grid .thumb-link:hover { transform: rotate(0deg) scale(1.08) !important; }
+  .collage-item:hover {
+    transform: rotate(var(--r, 0deg));
+  }
 }

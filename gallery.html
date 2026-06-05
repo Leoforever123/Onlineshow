@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>影片墙 — 马场纪实影集</title>
+  <meta name="description" content="三十帧马场影像组成的自由拼贴影片墙">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/css/glightbox.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="gallery-page">
+
+  <!-- ===================================================
+       GALLERY WALL
+       =================================================== -->
+  <section id="gallery-section" aria-label="影片墙">
+    <header class="gallery-header">
+      <p class="gallery-kicker">Gallery Wall</p>
+      <h1 class="gallery-title">影片墙</h1>
+      <p class="gallery-desc">三十帧马场瞬间，像散落在墙面上的相片</p>
+    </header>
+
+    <button class="back-btn gallery-back-btn" onclick="scrollToFlipbook()">返回影集</button>
+
+    <div class="gallery-viewport" id="galleryViewport">
+      <div class="gallery-wall" id="galleryWall">
+        <!-- Photos injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
