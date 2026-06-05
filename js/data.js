@@ -11,10 +11,10 @@ const SECTIONS = [
     dir:         'images/commercial',
     photos: [
       { file: '1-5.jpg',  caption: '寄养马匹特写：私人马匹托管服务，延伸产业配套营收' },
+      { file: '1-1.jpg',  caption: '鞍具房陈列：专业马具配套，支撑全业态商业运营基础' },
       { file: '1-2.jpg',  caption: '马具工具收纳：日常养护装备，保障马匹服务标准化输出' },
       { file: '1-3.jpg',  caption: '母马与新生马驹：良种繁育核心环节，实现资产自然增值' },
       { file: '1-4.jpg',  caption: '新生幼驹特写：血统幼驹交易，是马场核心资产收益来源' },
-      { file: '1-1.jpg',  caption: '鞍具房陈列：专业马具配套，支撑全业态商业运营基础' },
       { file: '1-6.jpg',  caption: '叼羊赛事竞技：民俗竞技赛事，带动地方文旅与赛事经济' },
       { file: '1-7.jpg',  caption: '叼羊赛事竞技：民俗竞技赛事，带动地方文旅与赛事经济' },
       { file: '1-8.jpg',  caption: '森林野骑体验：沉浸式户外文旅，拓宽大众化消费赛道' },
