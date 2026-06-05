@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>马·影 — PDF 书册版</title>
+  <meta name="description" content="马场纪实影集的打印与 PDF 导出版">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #f6f0e8;
+      --ink: #1c1712;
+      --muted: #6f6255;
+      --soft: #b8a58e;
+      --gold: #9a743c;
+      --page-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+      --ff-serif: 'Noto Serif SC', serif;
+      --ff-sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: #1b1815;
+    }
+
+    body {
+      margin: 0;
+      background: #1b1815;
+      color: var(--ink);
+      font-family: var(--ff-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 22px;
+      background: rgba(20, 18, 16, 0.92);
+      color: rgba(246, 240, 232, 0.82);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .toolbar-title {
+      font-family: var(--ff-serif);
+      font-size: 15px;
+      letter-spacing: 0.14em;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toolbar-btn {
+      border: 1px solid rgba(184, 151, 94, 0.72);
+      background: transparent;
+      color: #dcc7a2;
+      font-family: var(--ff-serif);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    .book-shell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 34px;
+      padding: 42px 18px 80px;
+    }
+
+    .sheet {
+      width: min(92vw, 794px);
+      aspect-ratio: 210 / 297;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05), transparent 8%, transparent 92%, rgba(0, 0, 0, 0.04)),
+        var(--paper);
+      box-shadow: var(--page-shadow);
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .sheet::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border: 1px solid rgba(28, 23, 18, 0.08);
+    }
+
+    .sheet-cover,
+    .sheet-section,
+    .sheet-end {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 84px;
+      background:
+        radial-gradient(circle at 50% 44%, rgba(154, 116, 60, 0.15), transparent 42%),
+        #171411;
+      color: #f2e7db;
+    }
+
+    .cover-content,
+    .section-content,
+    .end-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 520px;
+    }
+
+    .cover-rule,
+    .section-rule {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.72;
+      margin: 0 auto 26px;
+    }
+
+    .cover-title {
+      font-family: var(--ff-serif);
+      font-size: 64px;
+      line-height: 1;
+      letter-spacing: 0.22em;
+      margin: 0 0 22px;
+    }
+
+    .cover-subtitle {
+      font-family: var(--ff-serif);
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      color: rgba(242, 231, 219, 0.66);
+      margin: 0 0 34px;
+    }
+
+    .cover-meta,
+    .section-desc,
+    .end-text {
+      font-size: 13px;
+      line-height: 2;
+      letter-spacing: 0.1em;
+      color: rgba(242, 231, 219, 0.62);
+      white-space: pre-line;
+    }
+
+    .section-num {
+      font-family: var(--ff-sans);
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      color: #d4ad68;
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-family: var(--ff-serif);
+      font-size: 50px;
+      line-height: 1.16;
+      letter-spacing: 0.14em;
+      margin: 0 0 18px;
+    }
+
+    .section-subtitle {
+      font-family: var(--ff-serif);
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      color: rgba(242, 231, 219, 0.72);
+      margin: 0 0 34px;
+    }
+
+    .photo-page {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      padding: 34px;
+      gap: 24px;
+    }
+
+    .photo-frame {
+      min-height: 0;
+      background: #120f0d;
+      overflow: hidden;
+      border: 1px solid rgba(28, 23, 18, 0.18);
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-caption {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+      min-height: 82px;
+      padding: 0 2px 4px;
+    }
+
+    .caption-title {
+      display: block;
+      font-family: var(--ff-serif);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .caption-body {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
+      letter-spacing: 0.04em;
+    }
+
+    .page-num {
+      font-family: var(--ff-serif);
+      font-size: 11px;
+      color: var(--soft);
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .sheet-end {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    .end-title {
+      font-family: var(--ff-serif);
+      font-size: 34px;
+      letter-spacing: 0.2em;
+      margin: 0 0 22px;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html,
+      body {
+        width: 210mm;
+        background: #fff;
+      }
+
+      .toolbar {
+        display: none;
+      }
+
+      .book-shell {
+        display: block;
+        padding: 0;
+      }
+
+      .sheet {
+        width: 210mm;
+        height: 297mm;
+        aspect-ratio: auto;
+        box-shadow: none;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .sheet-cover,
+      .sheet-section,
+      .sheet-end {
+        padding: 54px;
+      }
+
+      .cover-title {
+        font-size: 48px;
+      }
+
+      .section-title {
+        font-size: 38px;
+      }
+
+      .photo-page {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="toolbar">
+    <div>
+      <div class="toolbar-title">马·影 PDF 书册版</div>
+    </div>
+    <div class="toolbar-actions">
+      <button class="toolbar-btn" onclick="window.print()">打印 / 另存为 PDF</button>
+      <button class="toolbar-btn" onclick="window.location.href='index.html#flipbook-section'">返回线上影集</button>
+    </div>
+  </header>
+
+  <main class="book-shell" id="bookShell" aria-label="马影 PDF 书册版">
+    <!-- Book pages are generated from js/data.js -->
+  </main>
+
+  <script src="js/data.js"></script>
+  <script>
+    const sectionNums = {
+      commercial: '一',
+      human: '二',
+      horses: '三',
+    };
+
+    /**
+     * Split a caption into title and body while keeping data.js as the source of truth.
+     */
+    function splitCaption(caption) {
+      const idx = caption.indexOf('：');
+      if (idx === -1) return ['', caption];
+      return [caption.slice(0, idx), caption.slice(idx + 1)];
+    }
+
+    /**
+     * Create a page element for the printable book.
+     */
+    function createSheet(className, content) {
+      const sheet = document.createElement('section');
+      sheet.className = `sheet ${className}`;
+      sheet.innerHTML = content;
+      return sheet;
+    }
+
+    /**
+     * Render the printable/PDF book from the shared exhibition data.
+     */
+    function renderBook() {
+      const shell = document.getElementById('bookShell');
+      const frag = document.createDocumentFragment();
+      let pageNum = 1;
+
+      frag.appendChild(createSheet('sheet-cover', `
+        <div class="cover-content">
+          <div class="cover-rule"></div>
+          <h1 class="cover-title">马·影</h1>
+          <p class="cover-subtitle">Equestrian Photography</p>
+          <p class="cover-meta">马场生活 · 影像纪实</p>
+        </div>
+      `));
+
+      SECTIONS.forEach((section) => {
+        const cn = sectionNums[section.id];
+
+        frag.appendChild(createSheet('sheet-section', `
+          <div class="section-content">
+            <span class="section-num">第 ${cn} 章</span>
+            <h2 class="section-title">${section.title}</h2>
+            <p class="section-subtitle">${section.subtitle}</p>
+            <div class="section-rule"></div>
+            <p class="section-desc">${section.description}</p>
+          </div>
+        `));
+
+        section.photos.forEach((photo) => {
+          const [title, body] = splitCaption(photo.caption);
+          const src = `${section.dir}/${photo.file}`;
+          const displayPageNum = String(pageNum).padStart(2, '0');
+          pageNum += 1;
+
+          frag.appendChild(createSheet('photo-page', `
+            <figure class="photo-frame">
+              <img src="${src}" alt="${title}" loading="lazy">
+            </figure>
+            <figcaption class="photo-caption">
+              <span>
+                ${title ? `<span class="caption-title">${title}</span>` : ''}
+                <span class="caption-body">${body}</span>
+              </span>
+              <span class="page-num">${displayPageNum}</span>
+            </figcaption>
+          `));
+        });
+      });
+
+      frag.appendChild(createSheet('sheet-end', `
+        <div class="end-content">
+          <div class="cover-rule"></div>
+          <h2 class="end-title">影集已阅</h2>
+          <p class="end-text">马场生活 · 影像纪实</p>
+        </div>
+      `));
+
+      shell.appendChild(frag);
+    }
+
+    renderBook();
+  </script>
+</body>
+</html>

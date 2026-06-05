@@ -431,7 +431,7 @@ button { cursor: pointer; }
 .section-tag {
   display: block;
   font-family: var(--ff-sans);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.25em;
   color: var(--gold);
   margin-bottom: 22px;
@@ -439,7 +439,7 @@ button { cursor: pointer; }
 
 .section-title {
   font-family: var(--ff-serif);
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 600;
   color: var(--text-1);
   letter-spacing: 0.12em;
@@ -449,7 +449,7 @@ button { cursor: pointer; }
 
 .section-subtitle {
   font-family: var(--ff-serif);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 300;
   color: var(--text-2);
   letter-spacing: 0.18em;
@@ -466,12 +466,13 @@ button { cursor: pointer; }
 
 .section-desc {
   font-family: var(--ff-sans);
-  font-size: 11px;
-  color: var(--text-3);
+  font-size: 12.5px;
+  color: rgba(237, 227, 216, 0.58);
   line-height: 2;
   letter-spacing: 0.06em;
-  max-width: 220px;
+  max-width: 320px;
   margin: 0 auto;
+  white-space: pre-line;
 }
 
 /* ── Photo pages ── */
@@ -536,7 +537,9 @@ button { cursor: pointer; }
 /* Mobile: smaller type inside pages */
 @media (max-width: 640px) {
   .cover-main-title { font-size: 36px; }
-  .section-title    { font-size: 24px; }
+  .section-title    { font-size: 28px; }
+  .section-subtitle { font-size: 14px; }
+  .section-desc     { font-size: 12px; max-width: 280px; }
   .section-bg-num   { font-size: 110px; }
   .caption-title    { font-size: 12px; }
   .caption-body     { font-size: 10px; }
